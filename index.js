@@ -5,13 +5,14 @@ const bodyParser = require('koa-bodyparser');
 const fs = require('fs');
 const path = require('path');
 const router = Router();
+const protect = require('koa-protect')
 
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: '',
     database: 'vote',
-    multipleStatements:true
+    multipleStatements: true
 })
 connection.connect({});
 
@@ -81,7 +82,11 @@ router.get('/result')
 
 
 const app = new koa();
-app.use(bodyParser())
+app.use(bodyParser());
+app.use(protect.koa.sqlInjection({
+    body: true,
+    loggerFunction: console.error
+}))
 app.use(async (ctx, next) => {
     const start_time = Date.now();
     await next();
