@@ -11,8 +11,9 @@ const connection = mysql.createConnection({
     user: 'root',
     password: '',
     database: 'vote',
+    multipleStatements:true
 })
-connection.connect();
+connection.connect({});
 
 
 function read(filename) {
@@ -63,12 +64,11 @@ router.post('/vote', async (ctx) => {
 
 router.get('/candidates', async (ctx) => {
     await new Promise(resolve => connection.query(
-        `SELECT vote.cid,
-                cname,
-                count(*) AS votes
-        FROM vote
-        LEFT JOIN candidate ON vote.cid = candidate.cid
-        GROUP BY cid;`,
+        `SELECT *,
+        count(vid) as votes
+        from candidate
+        left JOIN vote on vote.cid = candidate.cid
+        GROUP BY candidate.cid;`,
         (err, result) => {
             if (err) throw err;
             ctx.body = JSON.stringify({ data: result })
