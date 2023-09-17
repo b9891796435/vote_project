@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VSoul投票系统</title>
+</head>
+
+<body>
+    <table id="result">
+        <tr>
+            <th>姓名</th>
+            <th>票数</th>
+        </tr>
+    </table>
+    <section>
+        投票：
+        <div id="form">
+            <button>确认投票</button>
+        </div>
+    </section>
+</body>
+<script>
+    const refreshCandidates = () => {
+        fetch('/candidates')
+            .then(res => res.json())
+            .then(res => {
+                let submitBtn = form.children[0];
+                submitBtn.addEventListener('click', onVote)
+                let maxIndex = -1;
+                if (res.data.reduce((pre, cur) => {
+                    return pre + cur.votes;
+                })) {
+                    maxIndex = res.data.reduce((iMax, cur, index, arr) => {
+                        console.log(arr)
+                        if (arr[iMax].votes < cur.votes) {
+                            return index
+                        } else {
+                            return iMax
+                        }
+                    }, 0)
+                }
+
+                for (let i of res.data) {
+                    let container = document.createElement('tr');
+                    let cname = document.createElement('td');
+                    cname.innerText = i.cname;
+                    let votes = document.createElement('td');
+                    votes.innerText = i.votes;
+                    container.appendChild(cname);
+                    container.appendChild(votes);
+                    result.appendChild(container);
+
+                    let radioContainer = document.createElement('div')
+                    let radio = document.createElement('input');
+                    radio.type = 'radio';
+                    radio.name = 'cid';
+                    radio.value = i.cid;
+                    let label = document.createElement('label');
+                    label.innerText = i.cname;
+                    radioContainer.appendChild(radio);
+                    radioContainer.appendChild(label);
+                    form.insertBefore(radioContainer, submitBtn);
+                }
+                if (maxIndex !== -1) {
+                    console.log(maxIndex)
+                    result.children[maxIndex+1].className = 'elected'
+                }
+            })
+    }
+    const onVote = (e) => {
+        e.preventDefault();
+        console.log(JSON.parse(localStorage.getItem('uinfo'))[0].uid)
+        fetch('/vote', {
+            method: 'POST',
+            body: JSON.stringify({
+                cid: Number(document.querySelector('input[name="cid"]:checked').value),
+                uid: JSON.parse(localStorage.getItem('uinfo'))[0].uid
+            }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json())
+            .then(res => {
+                if (res.status == 'success') {
+                    alert('投票成功')
+                    refreshCandidates();
+                } else {
+                    alert('已投过票')
+                }
+            })
+    }
+    window.onload = refreshCandidates
+</script>
+<style>
+    .elected {
+        color: red
+    }
+</style>
+
+</html>

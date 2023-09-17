@@ -1,0 +1,17 @@
+{
+  "name": "vote_project",
+  "version": "1.0.0",
+  "description": "demo for 8INF135 course",
+  "main": "index.js",
+  "scripts": {
+    "test": "node ./index.js"
+  },
+  "author": "b9891796435",
+  "license": "MIT",
+  "dependencies": {
+    "koa-bodyparser": "^4.4.1",
+    "koa-router": "^12.0.0",
+    "koa2": "^2.0.0-alpha.7",
+    "mysql": "^2.18.1"
+  }
+}

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VSoul投票系统登录</title>
+</head>
+
+<body>
+    <h1>欢迎使用VSoul投票系统</h1>
+    <div>
+        <label for="username">用户名：</label>
+        <input type="text" name="username">
+        <label for="password">密码：</label>
+        <input type="text" name="password">
+        <button style="grid-area:e;">登录</button>
+    </div>
+</body>
+<script>
+    const handleLogin = () => {
+        fetch('/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username: document.querySelector('input[name="username"]').value,
+                password: document.querySelector('input[name="password"]').value,
+            })
+        }).then(res => res.json())
+            .then(res => {
+                if (res.status == 'failed') {
+                    alert('用户名或密码错误');
+                } else {
+                    localStorage.setItem('uinfo', JSON.stringify(res.data))
+                    alert('登录成功');
+                    window.location = '/vote'
+                }
+            })
+    }
+    document.querySelector('button').addEventListener('click', handleLogin)
+</script>
+<style>
+    h1 {
+        text-align: center;
+    }
+
+    div {
+        width: 300px;
+        margin: auto;
+
+        display: grid;
+        grid-template-columns: 64px 2fr;
+        grid-template-areas:
+            "a b"
+            "c d"
+            ". e";
+        row-gap: 8px;
+    }
+
+    button {
+        margin-left: auto;
+        display: block;
+    }
+</style>
+
+</html>
