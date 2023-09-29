@@ -92,4 +92,5 @@ app.use(async (ctx, next) => {
     console.log(`${ctx.method} ${ctx.url} - ${Date.now() - start_time}`)
 })//logger
 app.use(router.routes())
+app.listen(7170)
 console.log('server started')
