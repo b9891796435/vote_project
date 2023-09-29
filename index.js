@@ -89,7 +89,8 @@ app.use(protect.koa.sqlInjection({
 }))
 app.use(async (ctx, next) => {
     const start_time = Date.now();
-    await next();
+    if (ctx.status != 403)
+        await next();
     console.log(`${ctx.method} ${ctx.url} - ${Date.now() - start_time}`)
 })//logger
 // app.use(async (ctx, next) => {
